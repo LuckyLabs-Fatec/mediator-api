@@ -1,12 +1,14 @@
 const { GoogleGenAI } = require('@google/genai')
 const express = require('express')
+require('dotenv').config()
+
 const app = express()
 
 app.use(express.json());
 
 const port = 3000
 
-const clientAI = new GoogleGenAI({apiKey: "AIzaSyBu9bv1zNeqHe-fhtV_8hZjqGiCmP75Cb0"});
+const clientAI = new GoogleGenAI({apiKey: process.env.API_KEY_GOOGLEGENAI});
 
 app.post("/pre-approve", async (req, res) => {
     const { ideaDescription } = req.body
