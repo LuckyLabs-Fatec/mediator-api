@@ -395,6 +395,8 @@ curl -X POST http://localhost:3000/pre-approve \
 }
 ```
 
+Observação: se a consulta ao Gemini falhar por chave inválida ou indisponibilidade, a API usa um fallback local baseado na similaridade com o curso encontrado e ainda responde com 200 quando houver match suficiente.
+
 **Error Response (500):**
 ```json
 {
