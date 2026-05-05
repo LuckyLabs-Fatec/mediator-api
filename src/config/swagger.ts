@@ -21,7 +21,8 @@ const options: Options = {
           properties: {
             ideaDescription: {
               type: 'string',
-              example: 'Aplicativo para organizar monitorias por disciplina.'
+              description: 'Descrição detalhada da ideia de projeto',
+              example: 'Sistema para rastreamento de projetos comunitários conectados a necessidades sociais e ambientais.'
             }
           },
           required: ['ideaDescription']
@@ -29,15 +30,25 @@ const options: Options = {
         PreApproveResponse: {
           type: 'object',
           properties: {
-            approved: { type: 'boolean', example: true },
-            compatible: { type: 'boolean', example: true },
+            approved: { 
+              type: 'boolean',
+              description: 'Se a ideia foi aprovada no pré-approval',
+              example: true
+            },
+            compatible: { 
+              type: 'boolean',
+              description: 'Se a ideia é compatível com algum curso',
+              example: true
+            },
             opinion: {
               type: 'string',
+              description: 'Parecer técnico do Gemini sobre a viabilidade',
               example: 'A ideia é aderente ao curso e pode ser implementada com escopo viável.'
             },
             course: {
               type: 'object',
               nullable: true,
+              description: 'Curso mais compatível com a ideia ou null se nenhum foi encontrado',
               properties: {
                 id: { type: 'string', format: 'uuid' },
                 name: { type: 'string' },

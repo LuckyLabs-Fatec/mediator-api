@@ -154,20 +154,105 @@ CREATE TABLE projects (
 );
 ```
 
-## 📝 Exemplos de Uso
+## 📝 Exemplos de Teste
 
-### Exemplo 1: Falha (sem curso compatível)
+### ⚙️ Cursos Configurados
+
+A API está pré-configurada com dois cursos exemplo:
+
+```json
+[
+  {
+    "id": "e1111111-1111-4111-8111-111111111111",
+    "name": "Systems Analysis",
+    "description": "Technology projects connected to community needs."
+  },
+  {
+    "id": "e2222222-2222-4222-8222-222222222222",
+    "name": "Business Management",
+    "description": "Operational and social impact projects."
+  }
+```bash
+curl -X POST http://localhost:3000/pre-approve \
+
+---
+
+### ✅ Teste 1: Compatível com Systems Analysis
+
+**Ideia proposta:** Sistema de rastreamento de demandas tecnológicas comunitárias
 
 **Requisição:**
 ```bash
 curl -X POST http://localhost:3000/pre-approve \
   -H "Content-Type: application/json" \
   -d '{
-    "ideaDescription": "Aplicação para organizar receitas de culinária francesa"
+    "ideaDescription": "Desenvolver plataforma de gerenciamento de demandas tecnológicas para projetos comunitários, conectando organizações não-governamentais com desenvolvedores. A plataforma permitirá cadastro de necessidades e matching com profissionais."
   }'
 ```
 
-**Resposta (200 OK):**
+**Resposta Esperada (200 OK):**
+```json
+{
+  "approved": true,
+  "compatible": true,
+  "opinion": "A ideia está bem alinhada ao curso de Systems Analysis, pois envolve desenvolvimento de um sistema tecnológico conectado a necessidades reais da comunidade. O escopo é viável e bem estruturado.",
+  "course": {
+    "id": "e1111111-1111-4111-8111-111111111111",
+    "name": "Systems Analysis",
+    "description": "Technology projects connected to community needs."
+  }
+}
+```
+
+**Por que funciona:** Contém palavras-chave relevantes (technology, community, projects) que fazem match com Systems Analysis.
+
+---
+
+### ✅ Teste 2: Compatível com Business Management
+
+**Ideia proposta:** Dashboard de impacto social para ONGs
+
+**Requisição:**
+```bash
+curl -X POST http://localhost:3000/pre-approve \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ideaDescription": "Criar um dashboard web para organizações não-governamentais acompanharem o impacto operacional de seus projetos. Incluir métricas de alcance, retorno social, eficiência de recursos e relatórios para stakeholders."
+  }'
+```
+
+**Resposta Esperada (200 OK):**
+```json
+{
+  "approved": true,
+  "compatible": true,
+  "opinion": "Excelente alinhamento com Business Management. O projeto combina gestão operacional com análise de impacto social, essencial para organizações. Implementação viável com tecnologias web modernas.",
+  "course": {
+    "id": "e2222222-2222-4222-8222-222222222222",
+    "name": "Business Management",
+    "description": "Operational and social impact projects."
+  }
+}
+```
+
+**Por que funciona:** Termos como "operational", "social impact", "gestão", "retorno" fazem match com Business Management.
+
+---
+
+### ❌ Teste 3: Sem compatibilidade
+
+**Ideia proposta:** Receita de bolo de chocolate
+
+**Requisição:**
+```bash
+curl -X POST http://localhost:3000/pre-approve \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ideaDescription": "Aplicativo para compartilhar receitas de bolos, doces e sobremesas com fotos passo a passo"
+  }'
+```
+
+**Resposta Esperada (200 OK):**
 ```json
 {
   "approved": false,
@@ -175,6 +260,48 @@ curl -X POST http://localhost:3000/pre-approve \
   "opinion": "Não foi encontrado curso com descrição compatível para realizar a validação.",
   "course": null
 }
+```
+
+**Por que falha:** Nenhum dos cursos (Systems Analysis ou Business Management) tem palavras-chave relevantes com "receita", "bolo" ou "culinária".
+
+---
+
+### ⚠️ Teste 4: Erro - Campo obrigatório ausente
+
+**Requisição:**
+```bash
+curl -X POST http://localhost:3000/pre-approve \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+**Resposta Esperada (400 Bad Request):**
+```json
+{
+  "error": "ideaDescription é obrigatória."
+}
+```
+
+---
+
+### 🚨 Teste 5: Erro - API Key Inválida
+
+**Problema:**
+```
+ApiError: {"error":{"code":400,"message":"API key not valid. Please pass a valid API key."}}
+```
+
+**Solução:**
+1. Verifique sua API key do Google Gemini em [console.cloud.google.com](https://console.cloud.google.com)
+2. Atualize seu arquivo `.env`:
+   ```
+   GOOGLE_GENAI_API_KEY=sua_chave_valida_aqui
+   ```
+3. Reinicie o servidor:
+   ```bash
+   pnpm dev
+   ```
+
 ```
 
 **Razão**: Nenhum curso no banco tem palavras-chave como "receita", "culinária" ou "francesa". O algoritmo de matching procura por tokens >= 4 caracteres com relevância.
@@ -237,6 +364,7 @@ curl -X POST http://localhost:3000/pre-approve \
 ```
 
 **Resposta (400 Bad Request):**
+---
 ```json
 {
   "error": "ideaDescription é obrigatória."
@@ -248,29 +376,6 @@ curl -X POST http://localhost:3000/pre-approve \
 ## 🔗 Endpoints
 
 ### GET /health
-Verifica disponibilidade da API.
-
-```bash
-curl http://localhost:3000/health
-```
-
-Resposta:
-```json
-{ "status": "ok" }
-```
-
-### POST /pre-approve
-Avalia ideia com base na descrição do curso e parecer do Gemini.
-
-**Request Body:**
-```json
-{
-  "ideaDescription": "string (obrigatório, não vazio)"
-}
-```
-
-**Success Response (200):**
-```json
 {
   "approved": boolean,
   "compatible": boolean,
