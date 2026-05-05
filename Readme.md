@@ -47,6 +47,24 @@ pnpm start
 # Acesse: http://localhost:3000/docs
 ```
 
+### Deploy no Render
+
+Se o clone do Render vier sem `pnpm-lock.yaml`, não use `--frozen-lockfile`.
+
+**Build command recomendado:**
+```bash
+pnpm install --no-frozen-lockfile && pnpm run render-build
+```
+
+**Start command:**
+```bash
+pnpm start
+```
+
+**Variáveis obrigatórias no Render:**
+- `API_KEY_GOOGLEGENAI`
+- `DATABASE_URL`
+
 ## 📊 Fluxo da API
 
 ```
