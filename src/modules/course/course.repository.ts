@@ -12,7 +12,7 @@ const tokenize = (text: string) =>
   text
     .toLowerCase()
     .split(/[^a-zA-ZÀ-ÿ0-9]+/)
-    .filter((token) => token.length >= 4)
+    .filter((token) => token.length >= 3)
 
 const scoreCourseAgainstIdea = (course: Pick<CourseRecord, 'name' | 'description'>, ideaDescription: string): number => {
   const haystack = normalize(`${course.name} ${course.description ?? ''}`)
@@ -32,12 +32,20 @@ export const courseRepository = {
         description: { not: null },
         ...(keywords.length > 0
           ? {
-              OR: keywords.map((keyword) => ({
-                description: {
-                  contains: keyword,
-                  mode: 'insensitive'
+              OR: keywords.flatMap((keyword) => [
+                {
+                  description: {
+                    contains: keyword,
+                    mode: 'insensitive'
+                  }
+                },
+                {
+                  name: {
+                    contains: keyword,
+                    mode: 'insensitive'
+                  }
                 }
-              }))
+              ])
             }
           : {})
       },
