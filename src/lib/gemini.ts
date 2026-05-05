@@ -4,6 +4,12 @@ import type { GeminiReviewResult } from '../modules/pre-approval/preApproval.typ
 
 const clientAI = new GoogleGenAI({ apiKey: env.googleGenAiApiKey })
 
+const maskKey = (key?: string | null) => {
+  if (!key) return null
+  if (key.length <= 8) return '****'
+  return `${key.slice(0, 4)}...${key.slice(-4)}`
+}
+
 const tokenize = (text: string) =>
   text
     .toLowerCase()
@@ -95,7 +101,14 @@ Tarefa:
         opinion: text || 'Não foi possível extrair parecer estruturado do Gemini.'
       }
     } catch (error) {
-      console.error('Gemini review failed, using local fallback.', error)
+      console.error('Gemini review failed, using local fallback.', {
+        time: new Date().toISOString(),
+        model: 'gemini-2.5-flash',
+        apiKeyPresent: Boolean(env.googleGenAiApiKey),
+        apiKeyMasked: maskKey(env.googleGenAiApiKey),
+        message: (error as Error).message,
+        stack: (error as Error).stack
+      })
       return buildFallbackReview(params)
     }
   }
