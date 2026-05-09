@@ -65,6 +65,9 @@ pnpm start
 - `API_KEY_GOOGLEGENAI`
 - `DATABASE_URL`
 
+**Variável opcional recomendada:**
+- `CORS_ORIGIN` para liberar o domínio do frontend no Render. Se não for definido, a API responde ao origin da requisição.
+
 ## 📊 Fluxo da API
 
 ```
